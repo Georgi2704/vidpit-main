@@ -60,46 +60,6 @@ class UtcTimestamp(TypeDecorator):
             return value.astimezone(timezone.utc)
         return value
 
-#
-# class RolesUsersTabke(BaseModel):
-#     __tablename__ = "roles_users"
-#     id = Column(Integer(), primary_key=True)
-#     user_id = Column("user_id", UUID(as_uuid=True), ForeignKey("users.id"))
-#     role_id = Column("role_id", UUID(as_uuid=True), ForeignKey("roles.id"))
-#
-#
-# class RolesTable(BaseModel):
-#     __tablename__ = "roles"
-#
-#     id = Column(UUIDType, server_default=text("uuid_generate_v4()"), primary_key=True)
-#     name = Column(String(255), nullable=False, unique=True)
-#     created_at = Column(UtcTimestamp, nullable=False, server_default=text("current_timestamp()"))
-#     updated_at = Column(
-#         UtcTimestamp,
-#         default=datetime.now(tz=pytz.utc),
-#         onupdate=datetime.now(tz=pytz.utc),
-#     )
-#
-#
-# class UsersTable(BaseModel):
-#     __tablename__ = "users"
-#
-#     id = Column(UUIDType, server_default=text("uuid_generate_v4()"), primary_key=True)
-#     username = Column(String(32), nullable=False, unique=True)
-#     email = Column(String(255), unique=True, index=True, nullable=False)
-#     hashed_password = Column(String(255), nullable=False)
-#     is_active = Column(Boolean, nullable=False, default=True)
-#     is_superuser = Column(Boolean, nullable=False, default=False)
-#     created_at = Column(UtcTimestamp, nullable=False, server_default=text("current_timestamp()"))
-#     updated_at = Column(
-#         UtcTimestamp,
-#         server_default=text("current_timestamp()"),
-#         onupdate=nowtz,
-#         nullable=False,
-#     )
-#     maps = relationship("MapsTable", lazy="joined")
-#     roles = relationship("RolesTable", secondary="roles_users", lazy="joined")
-
 
 class VideosTable(BaseModel):
     __tablename__ = "videos"

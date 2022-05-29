@@ -14,6 +14,7 @@
 # limitations under the License.
 import logging
 import os
+import time
 
 import structlog
 from fastapi.applications import FastAPI
@@ -84,6 +85,30 @@ app.add_middleware(
 
 app.add_exception_handler(FormException, form_error_handler)
 app.add_exception_handler(ProblemDetailException, problem_detail_handler)
+
+
+# def callback(ch, method, properties, body):
+#     print(" [x] Received %r" % body)
+
+def callback(ch, method, properties, body):
+    print(" [x] Received %r" % body.decode())
+    time.sleep(body.count(b'.'))
+    print(" [x] Done")
+
+
+# def rabbitmq():
+#     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+#     channel = connection.channel()
+#     channel.queue_declare(queue='hello')
+#
+#     channel.basic_consume(queue='hello',
+#                           auto_ack=True,
+#                           on_message_callback=callback)
+#
+#     print(' [*] Waiting for messages. To exit press CTRL+C')
+#     channel.start_consuming()
+#
+# rabbitmq()
 
 
 @app.router.get("/", response_model=str, response_class=JSONResponse, include_in_schema=False)

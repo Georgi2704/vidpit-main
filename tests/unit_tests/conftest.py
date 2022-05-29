@@ -21,9 +21,8 @@ from starlette.testclient import TestClient
 from server import settings
 from server.api.api_v1.api import api_router
 from server.api.error_handling import ProblemDetailException
-from server.db import ProductsTable, db
+from server.db import db, VideosTable
 from server.db.database import ENGINE_ARGUMENTS, SESSION_ARGUMENTS, BaseModel, DBSessionMiddleware, SearchQuery
-from server.db.models import MapsTable, UsersTable
 from server.exception_handlers.generic_exception_handlers import form_error_handler, problem_detail_handler
 from server.forms import FormException
 from server.security import get_password_hash
@@ -195,65 +194,12 @@ def mocked_api():
         ...
         yield respx_mock
 
-
 @pytest.fixture()
-def product_1():
-    product = ProductsTable(name="Product 1", description="Product 1 description", created_at=nowtz())
-    db.session.add(product)
+def video_1():
+    video = VideosTable(name="Product 1", description="Video 1 description", uploaded_at=nowtz())
+    db.session.add(video)
     db.session.commit()
-    return str(product.id)
-
-
-@pytest.fixture()
-def product_2():
-    product = ProductsTable(name="Product 2", description="Product 2 description", created_at=nowtz())
-    db.session.add(product)
-    db.session.commit()
-    return str(product.id)
-
-
-@pytest.fixture()
-def user_admin():
-    user = UsersTable(
-        username="Admin",
-        email="admin@admin",
-        hashed_password=get_password_hash("admin"),
-        is_superuser=True,
-        is_active=True,
-    )
-    db.session.add(user)
-    db.session.commit()
-    return str(user.id)
-
-
-@pytest.fixture()
-def user_non_admin():
-    user = UsersTable(
-        username="User",
-        email="user@user",
-        hashed_password=get_password_hash("user"),
-        is_superuser=False,
-        is_active=True,
-    )
-    db.session.add(user)
-    db.session.commit()
-    return str(user.id)
-
-
-@pytest.fixture()
-def map_1(user_non_admin):
-    map_1 = MapsTable(
-        name="Map1",
-        description="Desc1",
-        size_x=1,
-        size_y=1,
-        status="new",
-        created_by=user_non_admin,
-    )
-    db.session.add(map_1)
-    db.session.commit()
-    return str(map_1.id)
-
+    return str(video.id)
 
 @pytest.fixture()
 def superuser_token_headers(test_client, user_admin) -> Dict[str, str]:
