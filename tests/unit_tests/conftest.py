@@ -81,7 +81,7 @@ def db_uri(worker_id):
     """
     database_uri = os.environ.get(
         "DATABASE_URI",
-        "postgresql://boilerplate:boilerplate@localhost/boilerplate-test",
+        "postgresql://videos:videos@localhost/videos-test",
     )
     if worker_id == "master":
         # pytest is being run without any workers
@@ -196,7 +196,14 @@ def mocked_api():
 
 @pytest.fixture()
 def video_1():
-    video = VideosTable(name="Product 1", description="Video 1 description", uploaded_at=nowtz())
+    video = VideosTable(name="Video 1", description="Video 1 description", uploaded_at=nowtz())
+    db.session.add(video)
+    db.session.commit()
+    return str(video.id)
+
+@pytest.fixture()
+def video_2():
+    video = VideosTable(name="Video 2", description="Video 2 description", uploaded_at=nowtz())
     db.session.add(video)
     db.session.commit()
     return str(video.id)
