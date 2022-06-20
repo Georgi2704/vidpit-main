@@ -25,7 +25,7 @@ jobs:
           sam build --use-container --debug
       - name: Package & Upload to S3 Bucket
         run: |
-          sam package --s3-bucket vidpit-videos --output-template-file out.yml --region eu-central-1
+          sam package --s3-bucket vidpit-videos-api --output-template-file out.yml --region eu-central-1
       - name: Deploy to AWS Lambda
         run: |
-          sam deploy --template-file out.yml --stack-name vidpit-videos --region eu-central-1 --no-fail-on-empty-changeset --capabilities CAPABILITY_IAM
+          sam deploy --template-file out.yml --stack-name vidpit-videos-api --region eu-central-1 --no-fail-on-empty-changeset --capabilities CAPABILITY_IAM
