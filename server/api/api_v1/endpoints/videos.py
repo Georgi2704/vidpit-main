@@ -10,13 +10,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import json
+import logging
 from http import HTTPStatus
 from typing import List
 from uuid import UUID
+import io
+
+import boto3
+from botocore.exceptions import ClientError
+from fastapi import File, UploadFile
+
+import requests
+
+from server import main
 
 from fastapi import HTTPException
-from fastapi.param_functions import Body, Depends
+from fastapi.param_functions import Body, Depends, Form
 from fastapi.routing import APIRouter
 from starlette.responses import Response
 
@@ -25,6 +35,7 @@ from server.api.error_handling import raise_status
 from server.crud import video_crud
 from server.db.models import VideosTable
 from server.schemas import Video, VideoCreate, VideoUpdate
+from server.api.helpers import authentication_url, upload_file
 
 router = APIRouter()
 
@@ -50,8 +61,20 @@ def get_by_id(id: UUID) -> VideosTable:
 
 
 @router.post("/", response_model=None, status_code=HTTPStatus.NO_CONTENT)
-def create(data: VideoCreate = Body(...)) -> None:
-    return video_crud.create(obj_in=data)
+def create(*, name: str = Form(...), description: str = Form(...), jwt_token: str = Form(...),
+           file: UploadFile) -> None:
+    response = requests.post(authentication_url("users/decode-token"), data=json.dumps({"token": jwt_token}))
+    video = VideoCreate(name=name, description=description, uploaded_by="")
+    print(response)
+    response_dict = json.loads(response.text)
+    video.uploaded_by = response_dict['username']
+    video_name = name+".mp4"
+
+    videofile = file.file
+    videofile.seek(0)
+    fo = io.BytesIO(videofile.read())
+    upload = upload_file(fo, object_name=video_name)
+    return video_crud.create(obj_in=video)
 
 
 @router.put("/{video_id}", response_model=None, status_code=HTTPStatus.NO_CONTENT)

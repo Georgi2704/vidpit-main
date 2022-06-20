@@ -67,6 +67,7 @@ class VideosTable(BaseModel):
     id = Column(UUIDType, server_default=text("uuid_generate_v4()"), primary_key=True)
     name = Column(String(), nullable=False, unique=True)
     description = Column(Text(), nullable=False)
+    uploaded_by = Column(String())
     uploaded_at = Column(UtcTimestamp, nullable=False, server_default=text("current_timestamp()"))
 
 

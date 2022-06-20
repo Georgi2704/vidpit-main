@@ -10,16 +10,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import logging
+import os
 from http import HTTPStatus
 from typing import List, Optional
 
+import boto3
+from botocore.exceptions import ClientError
 from more_itertools import chunked
 from sqlalchemy import String, cast
 from sqlalchemy.orm import Query
 from sqlalchemy.sql import expression
 from starlette.responses import Response
 from structlog import get_logger
+from server import main
+from server.settings import app_settings
 
 from server.api.error_handling import raise_status
 from server.db.database import BaseModel
@@ -99,3 +104,47 @@ def _query_with_filters(
         response.headers["Content-Range"] = f"items {range_start}-{range_end}/{total}"
 
     return query.all()
+
+
+def authentication_url(endpoint):
+    if main.app.root_path == "/prod":
+        return app_settings.AUTH_PRODUCTION_URL + endpoint
+    else:
+        return app_settings.AUTH_LOCALHOST_URL + endpoint
+
+
+def get_s3_client():
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=os.getenv("LAMBDA_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.getenv("LAMBDA_SECRET_ACCESS_KEY"),
+        region_name='eu-central-1')
+    return s3_client
+
+
+def upload_file(file_obj, object_name=None):
+    """Upload a file to an S3 bucket
+
+    :param s3_client: S3 Client
+    :param file_obj: File to upload
+    :param bucket: Bucket to upload to
+    :param folder: Folder to upload to
+    :param object_name: S3 object name. If not specified then file_name is used
+    :return: True if file was uploaded, else False
+    """
+
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=os.getenv("LAMBDA_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.getenv("LAMBDA_SECRET_ACCESS_KEY"),
+        region_name='eu-central-1')
+
+    # If S3 object_name was not specified, use file_name
+    if object_name is None:
+        object_name = file_obj
+    try:
+        s3_client.upload_fileobj(file_obj, "vidpit-videos-files", f"{object_name}", ExtraArgs={'ACL':'public-read'})
+    except ClientError as e:
+        logging.error(e)
+        return False
+    return True

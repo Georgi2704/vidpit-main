@@ -74,13 +74,18 @@ app.include_router(api_router, prefix="/api")
 
 app.add_middleware(SessionMiddleware, secret_key=app_settings.SESSION_SECRET)
 app.add_middleware(DBSessionMiddleware, database=db)
-origins = app_settings.CORS_ORIGINS.split(",")
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+    "http://localhost:3000/",
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_methods=app_settings.CORS_ALLOW_METHODS,
-    allow_headers=app_settings.CORS_ALLOW_HEADERS,
-    expose_headers=app_settings.CORS_EXPOSE_HEADERS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.add_exception_handler(FormException, form_error_handler)

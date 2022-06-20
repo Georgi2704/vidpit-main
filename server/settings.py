@@ -110,6 +110,9 @@ class AppSettings(BaseSettings):
     FIRST_USER = "user@banaan.org"
     FIRST_USER_PASSWORD = "CHANGEME"
 
+    AUTH_PRODUCTION_URL = "https://mxhv2u2a4l.execute-api.eu-central-1.amazonaws.com/prod/api/"
+    AUTH_LOCALHOST_URL = "http://127.0.0.1:8080/api/"
+
     @validator("EMAILS_FROM_NAME")
     def get_project_name(cls, v: Optional[str], values: Dict[str, Any]) -> str:
         if not v:

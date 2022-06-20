@@ -12,14 +12,16 @@
 # limitations under the License.
 
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from server.schemas.base import BoilerplateBaseModel
 
 
 class VideoBase(BoilerplateBaseModel):
-    name: str
-    description: str
+    name: Optional[str]
+    description: Optional[str]
+    uploaded_by: Optional[str]
     # Video_type: str
 
     class Config:
