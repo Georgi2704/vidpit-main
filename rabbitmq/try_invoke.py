@@ -1,15 +1,15 @@
 import json
+import os
 
 import boto3
-import os
 from dotenv import load_dotenv
-
 
 # str(check_current_active_superuser(get_current_user(token)))
 
-def main ():
+
+def main():
     client = boto3.client(
-        'lambda',
+        "lambda",
         aws_access_key_id=os.getenv("LAMBDA_ACCESS_KEY_ID"),
         aws_secret_access_key=os.getenv("LAMBDA_SECRET_ACCESS_KEY"),
     )
@@ -23,16 +23,12 @@ def main ():
             "httpMethod": "GET",
             "path": "/Prod/",
             "protocol": "HTTP/1.1",
-            "stage": "Prod"
+            "stage": "Prod",
         },
         "body": "null",
-        "isBase64Encoded": "false"
+        "isBase64Encoded": "false",
     }
-    response = client.invoke(
-        FunctionName='vidpit-authentication',
-        InvocationType='Event',
-        Payload=json.dumps(payload)
-    )
+    response = client.invoke(FunctionName="vidpit-authentication", InvocationType="Event", Payload=json.dumps(payload))
 
     print(response)
     print(os.getenv("LAMBDA_ACCESS_KEY_ID"))

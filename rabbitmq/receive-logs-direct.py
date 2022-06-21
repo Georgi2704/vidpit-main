@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 import os
-import pika
 import sys
 import time
 
+import pika
+
+
 def main():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(
-        host='localhost')
-    )
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host="localhost"))
     channel = connection.channel()
 
-    channel.exchange_declare(exchange='direct_logs', exchange_type='direct')
+    channel.exchange_declare(exchange="direct_logs", exchange_type="direct")
 
-    result = channel.queue_declare(queue='', exclusive=True)
+    result = channel.queue_declare(queue="", exclusive=True)
     queue_name = result.method.queue
 
     severities = sys.argv[1:]
@@ -22,11 +22,9 @@ def main():
         sys.exit(1)
 
     for severity in severities:
-        channel.queue_bind(exchange='direct_logs',
-                           queue=queue_name,
-                           routing_key=severity)
+        channel.queue_bind(exchange="direct_logs", queue=queue_name, routing_key=severity)
 
-    print(' [*] Waiting for ' + ' '.join(severities) + ' logs. To exit press CTRL+C')
+    print(" [*] Waiting for " + " ".join(severities) + " logs. To exit press CTRL+C")
 
     def callback(ch, method, properties, body):
         print(" [x] %r:%r" % (method.routing_key, body))
@@ -35,11 +33,12 @@ def main():
 
     channel.start_consuming()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print('Interrupted')
+        print("Interrupted")
         try:
             sys.exit(0)
         except SystemExit:

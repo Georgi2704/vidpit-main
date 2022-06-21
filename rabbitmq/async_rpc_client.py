@@ -3,9 +3,7 @@ import uuid
 from typing import MutableMapping
 
 from aio_pika import Message, connect
-from aio_pika.abc import (
-    AbstractChannel, AbstractConnection, AbstractIncomingMessage, AbstractQueue,
-)
+from aio_pika.abc import AbstractChannel, AbstractConnection, AbstractIncomingMessage, AbstractQueue
 
 
 class FibonacciRpcClient:
@@ -20,7 +18,8 @@ class FibonacciRpcClient:
 
     async def connect(self) -> "FibonacciRpcClient":
         self.connection = await connect(
-            "amqp://guest:guest@localhost/", loop=self.loop,
+            "amqp://guest:guest@localhost/",
+            loop=self.loop,
         )
         self.channel = await self.connection.channel()
         self.callback_queue = await self.channel.declare_queue(exclusive=True)
@@ -58,7 +57,9 @@ class FibonacciRpcClient:
 async def main() -> None:
     fibonacci_rpc = await FibonacciRpcClient().connect()
     print(" [x] Requesting fib(30)")
-    response = await fibonacci_rpc.call("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTI2MjgxNDUsInN1YiI6IjM4MjdhYTVmLWFkNzctNDMwMy05ZTYzLWJiZmE4N2E1ZTNiNyJ9.FYYYbQoGdQCoV4IAB8TIQ7L8njz1LvtZZjUAV9M_-Wk")
+    response = await fibonacci_rpc.call(
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTI2MjgxNDUsInN1YiI6IjM4MjdhYTVmLWFkNzctNDMwMy05ZTYzLWJiZmE4N2E1ZTNiNyJ9.FYYYbQoGdQCoV4IAB8TIQ7L8njz1LvtZZjUAV9M_-Wk"
+    )
     print(f" [.] Got {response!r}")
 
 

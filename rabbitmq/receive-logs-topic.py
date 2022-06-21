@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 import os
-import pika
 import sys
 import time
 
+import pika
+
+
 def main():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(
-        host='localhost')
-    )
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host="localhost"))
     channel = connection.channel()
 
-    channel.exchange_declare(exchange='topic_logs', exchange_type='topic')
+    channel.exchange_declare(exchange="topic_logs", exchange_type="topic")
 
-    result = channel.queue_declare(queue='', exclusive=True)
+    result = channel.queue_declare(queue="", exclusive=True)
     queue_name = result.method.queue
 
     binding_keys = sys.argv[1:]
@@ -22,11 +22,9 @@ def main():
         sys.exit(1)
 
     for binding_key in binding_keys:
-        channel.queue_bind(exchange='topic_logs',
-                           queue=queue_name,
-                           routing_key=binding_key)
+        channel.queue_bind(exchange="topic_logs", queue=queue_name, routing_key=binding_key)
 
-    print(' [*] Waiting for ' + ' '.join(binding_keys) + ' logs. To exit press CTRL+C')
+    print(" [*] Waiting for " + " ".join(binding_keys) + " logs. To exit press CTRL+C")
 
     def callback(ch, method, properties, body):
         print(" [x] %r:%r" % (method.routing_key, body))
@@ -35,11 +33,12 @@ def main():
 
     channel.start_consuming()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print('Interrupted')
+        print("Interrupted")
         try:
             sys.exit(0)
         except SystemExit:
