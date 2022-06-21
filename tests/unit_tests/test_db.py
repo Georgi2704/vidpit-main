@@ -167,4 +167,4 @@ def test_autouse_fixture_rolls_back_bbb():
 
 
 def test_str_method():
-    assert str(VideosTable()) == "VideosTable(id=None, name=None, description=None, uploaded_at=None)"
+    assert str(VideosTable()) == "VideosTable(id=None, name=None, description=None, uploaded_by=None, uploaded_at=None)"

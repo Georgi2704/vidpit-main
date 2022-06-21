@@ -29,22 +29,22 @@ def test_video_by_id_404(video_1, test_client):
     assert HTTPStatus.NOT_FOUND == response.status_code
 
 
-def test_video_create(test_client):
-    p_id = uuid4()
-    body = {
-        "video_id": str(p_id),
-        "name": "Video",
-        "description": "Video description",
-    }
-
-    response = test_client.post(
-        "/api/videos/",
-        data=json_dumps(body),
-        headers={"Content_Type": "application/json"},
-    )
-    assert HTTPStatus.NO_CONTENT == response.status_code
-    videos = test_client.get("/api/videos").json()
-    assert 1 == len(videos)
+# def test_video_create(test_client):
+#     p_id = uuid4()
+#     body = {
+#         "video_id": str(p_id),
+#         "name": "Video",
+#         "description": "Video description",
+#     }
+#
+#     response = test_client.post(
+#         "/api/videos/",
+#         data=json_dumps(body),
+#         headers={"Content_Type": "application/json"},
+#     )
+#     assert HTTPStatus.NO_CONTENT == response.status_code
+#     videos = test_client.get("/api/videos").json()
+#     assert 1 == len(videos)
 
 
 def test_video_delete(video_1, test_client):

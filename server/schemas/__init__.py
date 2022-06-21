@@ -11,11 +11,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from server.schemas.msg import Msg
-from server.schemas.video import Video, VideoCreate, VideoUpdate
 from server.schemas.category import Category, CategoryCreate, CategoryUpdate
+from server.schemas.msg import Msg
 from server.schemas.token import Token, TokenPayload
 from server.schemas.user import User, UserCreate, UserUpdate
+from server.schemas.video import Video, VideoCreate, VideoUpdate
 
 __all__ = (
     "Category",
@@ -31,5 +31,3 @@ __all__ = (
     "UserUpdate",
     "Msg",
 )
-
-

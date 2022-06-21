@@ -77,4 +77,3 @@ class CategoriesTable(BaseModel):
     id = Column(UUIDType, server_default=text("uuid_generate_v4()"), primary_key=True)
     video_category = Column(String(510), nullable=False, unique=True)
     description = Column(Text())
-

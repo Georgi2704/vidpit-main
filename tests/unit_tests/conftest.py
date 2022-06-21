@@ -1,5 +1,4 @@
 import os
-import uuid
 from contextlib import closing
 from typing import Dict, cast
 
@@ -18,19 +17,15 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import JSONResponse
 from starlette.testclient import TestClient
 
-from server import settings
 from server.api.api_v1.api import api_router
 from server.api.error_handling import ProblemDetailException
-from server.db import db, VideosTable
+from server.db import VideosTable, db
 from server.db.database import ENGINE_ARGUMENTS, SESSION_ARGUMENTS, BaseModel, DBSessionMiddleware, SearchQuery
 from server.exception_handlers.generic_exception_handlers import form_error_handler, problem_detail_handler
 from server.forms import FormException
-from server.security import get_password_hash
 from server.settings import app_settings
 from server.types import UUIDstr
 from server.utils.date_utils import nowtz
-
-from .utils.auth import get_superuser_token_headers
 
 logger = structlog.getLogger(__name__)
 
@@ -164,7 +159,6 @@ def fastapi_app(database, db_uri):
         redoc_url="/api/redoc",
         default_response_class=JSONResponse,
     )
-
     app.include_router(api_router, prefix="/api")
     app.add_middleware(SessionMiddleware, secret_key=app_settings.SESSION_SECRET)
     app.add_middleware(DBSessionMiddleware, database=db)
@@ -194,6 +188,7 @@ def mocked_api():
         ...
         yield respx_mock
 
+
 @pytest.fixture()
 def video_1():
     video = VideosTable(name="Video 1", description="Video 1 description", uploaded_at=nowtz())
@@ -201,12 +196,14 @@ def video_1():
     db.session.commit()
     return str(video.id)
 
+
 @pytest.fixture()
 def video_2():
     video = VideosTable(name="Video 2", description="Video 2 description", uploaded_at=nowtz())
     db.session.add(video)
     db.session.commit()
     return str(video.id)
+
 
 @pytest.fixture()
 def superuser_token_headers(test_client, user_admin) -> Dict[str, str]:

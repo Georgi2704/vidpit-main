@@ -19,6 +19,7 @@ from sqlalchemy.exc import OperationalError
 
 from server.api.error_handling import raise_status
 from server.db import VideosTable
+
 logger = structlog.get_logger(__name__)
 
 router = APIRouter()
@@ -33,4 +34,3 @@ def get_health() -> str:
         logger.debug("Health endpoint error details", error=str(e))
         raise_status(HTTPStatus.INTERNAL_SERVER_ERROR)
     return "OK"
-

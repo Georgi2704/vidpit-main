@@ -23,11 +23,10 @@ from sqlalchemy.orm import Query
 from sqlalchemy.sql import expression
 from starlette.responses import Response
 from structlog import get_logger
-from server import main
-from server.settings import app_settings
 
 from server.api.error_handling import raise_status
 from server.db.database import BaseModel
+from server.settings import app_settings
 
 logger = get_logger(__name__)
 
@@ -107,7 +106,9 @@ def _query_with_filters(
 
 
 def authentication_url(endpoint):
-    if main.app.root_path == "/prod":
+    from server.main import app
+
+    if app.root_path == "/prod":
         return app_settings.AUTH_PRODUCTION_URL + endpoint
     else:
         return app_settings.AUTH_LOCALHOST_URL + endpoint
@@ -115,10 +116,11 @@ def authentication_url(endpoint):
 
 def get_s3_client():
     s3_client = boto3.client(
-        's3',
+        "s3",
         aws_access_key_id=os.getenv("LAMBDA_ACCESS_KEY_ID"),
         aws_secret_access_key=os.getenv("LAMBDA_SECRET_ACCESS_KEY"),
-        region_name='eu-central-1')
+        region_name="eu-central-1",
+    )
     return s3_client
 
 
@@ -134,16 +136,17 @@ def upload_file(file_obj, object_name=None):
     """
 
     s3_client = boto3.client(
-        's3',
+        "s3",
         aws_access_key_id=os.getenv("LAMBDA_ACCESS_KEY_ID"),
         aws_secret_access_key=os.getenv("LAMBDA_SECRET_ACCESS_KEY"),
-        region_name='eu-central-1')
+        region_name="eu-central-1",
+    )
 
     # If S3 object_name was not specified, use file_name
     if object_name is None:
         object_name = file_obj
     try:
-        s3_client.upload_fileobj(file_obj, "vidpit-videos-files", f"{object_name}", ExtraArgs={'ACL':'public-read'})
+        s3_client.upload_fileobj(file_obj, "vidpit-videos-files", f"{object_name}", ExtraArgs={"ACL": "public-read"})
     except ClientError as e:
         logging.error(e)
         return False

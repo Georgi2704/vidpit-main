@@ -95,9 +95,10 @@ app.add_exception_handler(ProblemDetailException, problem_detail_handler)
 # def callback(ch, method, properties, body):
 #     print(" [x] Received %r" % body)
 
+
 def callback(ch, method, properties, body):
     print(" [x] Received %r" % body.decode())
-    time.sleep(body.count(b'.'))
+    time.sleep(body.count(b"."))
     print(" [x] Done")
 
 
